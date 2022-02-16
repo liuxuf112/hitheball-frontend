@@ -51,11 +51,11 @@ class _CreateGameScreenState extends State<CreateGameScreen> {
       5; //this updates to 0 once hours goes to higher than 1, and back to 0.
   var _createGameButtonActive = true;
 
-  final tagRadiusController = TextEditingController(text: '10');
-  final viewRadiusController = TextEditingController(text: '30');
-  final playersController = TextEditingController(text: '20');
-  final flagsController = TextEditingController(text: '3');
-  final coinsController = TextEditingController(text: '5');
+  final tagRadiusController = TextEditingController(text: '5');
+  final viewRadiusController = TextEditingController(text: '10');
+  final playersController = TextEditingController(text: '4');
+  final flagsController = TextEditingController(text: '1');
+  final coinsController = TextEditingController(text: '0');
 
   bool isChessOn = false;
   final GameState _gameState = GameState();
@@ -391,30 +391,30 @@ class _CreateGameScreenState extends State<CreateGameScreen> {
                               text: 'Tag Radius (m):',
                               textRightPadding: 12),
                         ),
-                        Padding(
-                          padding: const EdgeInsets.all(4.0),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: [
-                              const TextWithOutline(
-                                  fontSize: 20,
-                                  strokeWidth: 4,
-                                  strokeColor: Colors.black,
-                                  textColor: Colors.white,
-                                  text: "Chess:"),
-                              Switch(
-                                value: isChessOn,
-                                onChanged: (value) {
-                                  setState(() {
-                                    isChessOn = value;
-                                  });
-                                },
-                                activeTrackColor: Colors.green,
-                                activeColor: Colors.white,
-                              ),
-                            ],
-                          ),
-                        ),
+                        // Padding(
+                        //   padding: const EdgeInsets.all(4.0),
+                        //   child: Row(
+                        //     mainAxisAlignment: MainAxisAlignment.end,
+                        //     children: [
+                        //       const TextWithOutline(
+                        //           fontSize: 20,
+                        //           strokeWidth: 4,
+                        //           strokeColor: Colors.black,
+                        //           textColor: Colors.white,
+                        //           text: "Chess:"),
+                        //       Switch(
+                        //         value: isChessOn,
+                        //         onChanged: (value) {
+                        //           setState(() {
+                        //             isChessOn = value;
+                        //           });
+                        //         },
+                        //         activeTrackColor: Colors.green,
+                        //         activeColor: Colors.white,
+                        //       ),
+                        //     ],
+                        //   ),
+                        // ),
                       ],
                     ),
                   ),
