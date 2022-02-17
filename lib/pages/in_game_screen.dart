@@ -116,6 +116,7 @@ class _InGameScreenState extends State<InGameScreen> {
   }
 
   void dealWithGetBody(decodedBody) {
+    print(decodedBody);
     bool newHasFlag = decodedBody["hasFlag"];
     int newFlagNumber = -1;
     if (newHasFlag) {
@@ -126,14 +127,6 @@ class _InGameScreenState extends State<InGameScreen> {
     int newTagRadius = decodedBody["tagRadius"];
     String username = decodedBody["username"];
     bool isGameOver = decodedBody["gameOver"];
-    String className = decodedBody["classString"];
-    int classId = decodedBody["classId"];
-    int queenFlagNumber = decodedBody["queenFlagNumber"];
-
-    if (_showedClassDialogue == false && classId != 0) {
-      showClassInfoDialogue(context);
-      _showedClassDialogue = true;
-    }
 
     if (isGameOver == true && _gameState.gameEnded == false) {
       _gameState.gameEnded = true;
@@ -176,9 +169,7 @@ class _InGameScreenState extends State<InGameScreen> {
     _gameState.viewRadius = newViewRadius;
     _gameState.tagRadius = newTagRadius;
     _gameState.username = username;
-    _gameState.className = className;
-    _gameState.classId = classId;
-    _gameState.queenFlag = queenFlagNumber;
+
     if (!mounted) {
       return;
     }
