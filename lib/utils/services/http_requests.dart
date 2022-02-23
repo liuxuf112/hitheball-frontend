@@ -18,15 +18,15 @@ const UPDATE_MY_LOCATION_PATH = 'updatePlayerLocation';
 const START_GAME_PATH = '/startGame';
 const GET_PLAYERS_IN_GAME_PATH = '/getPlayersInGame';
 const SET_GAME_INFO_PATH = '/setGameInfo';
-const TAG_PLAYER_PATH = '/attemptTagPlayer';
+//const TAG_PLAYER_PATH = '/attemptTagPlayer';
 const move_flag = '/moveflag';
-const STEAL_FLAG_PATH = '/attemptStealFlag';
+//const STEAL_FLAG_PATH = '/attemptStealFlag';
 const getTeammatesLocations = '/getTeammatesLocations';
 const getClockInfo = '/getClockInfo';
 const GET_END_INFO = '/getEndGameInfo';
-const GENERATE_COIN_FOR_GAME = "/generateCoinForGame";
-const GET_COINS_FROM_GAME = "/getCoinsFromGame";
-const PLAYER_GET_GAME_COIN = '/playerGetGameCoin';
+//const GENERATE_COIN_FOR_GAME = "/generateCoinForGame";
+//const GET_COINS_FROM_GAME = "/getCoinsFromGame";
+//const PLAYER_GET_GAME_COIN = '/playerGetGameCoin';
 
 Future<Response?> makePostRequest(String jsonBody, String path) async {
   //what happens if the server doesn't exist?... ah it creates a socket error, errno 110, address = 10.0.2.2. SocketException

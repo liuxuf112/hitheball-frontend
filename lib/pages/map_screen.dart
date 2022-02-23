@@ -854,10 +854,7 @@ class _MapScreenState extends State<MapScreen> {
                       'Attempt Tag',
                       style: TextStyle(fontSize: 20, color: Colors.red),
                     ),
-                    onPressed: () {
-                      _attemptTagPlayer(player.username, teamNumber);
-                      Navigator.of(context).pop();
-                    },
+                    onPressed: () {},
                   ),
           ],
         );

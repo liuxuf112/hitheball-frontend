@@ -54,7 +54,7 @@ class _CreateGameScreenState extends State<CreateGameScreen> {
   final tagRadiusController = TextEditingController(text: '5');
   final viewRadiusController = TextEditingController(text: '10');
   final playersController = TextEditingController(text: '4');
-  final flagsController = TextEditingController(text: '1');
+  final flagsController = TextEditingController(text: '2');
   final coinsController = TextEditingController(text: '0');
 
   bool isChessOn = false;
@@ -391,30 +391,30 @@ class _CreateGameScreenState extends State<CreateGameScreen> {
                               text: 'Tag Radius (m):',
                               textRightPadding: 12),
                         ),
-                        // Padding(
-                        //   padding: const EdgeInsets.all(4.0),
-                        //   child: Row(
-                        //     mainAxisAlignment: MainAxisAlignment.end,
-                        //     children: [
-                        //       const TextWithOutline(
-                        //           fontSize: 20,
-                        //           strokeWidth: 4,
-                        //           strokeColor: Colors.black,
-                        //           textColor: Colors.white,
-                        //           text: "Chess:"),
-                        //       Switch(
-                        //         value: isChessOn,
-                        //         onChanged: (value) {
-                        //           setState(() {
-                        //             isChessOn = value;
-                        //           });
-                        //         },
-                        //         activeTrackColor: Colors.green,
-                        //         activeColor: Colors.white,
-                        //       ),
-                        //     ],
-                        //   ),
-                        // ),
+                        Padding(
+                          padding: const EdgeInsets.all(4.0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              const TextWithOutline(
+                                  fontSize: 20,
+                                  strokeWidth: 4,
+                                  strokeColor: Colors.black,
+                                  textColor: Colors.white,
+                                  text: "Chess:"),
+                              Switch(
+                                value: isChessOn,
+                                onChanged: (value) {
+                                  setState(() {
+                                    isChessOn = value;
+                                  });
+                                },
+                                activeTrackColor: Colors.green,
+                                activeColor: Colors.white,
+                              ),
+                            ],
+                          ),
+                        ),
                       ],
                     ),
                   ),
