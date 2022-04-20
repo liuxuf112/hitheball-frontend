@@ -32,6 +32,7 @@ const userWidthAndHeight = 100;
 const coinWidthAndHeight = 80;
 
 const ballWidthAndHeight = 100;
+var tempx = 37.42227873061003;
 
 class MapScreen extends StatefulWidget {
   const MapScreen({Key? key}) : super(key: key);
@@ -299,11 +300,13 @@ class _MapScreenState extends State<MapScreen> {
   }
 
   void addball() {
+    tempx = tempx + 0.00001;
+    //moving by set global
     listCustomMarkers.add(
       Marker(
         anchor: const Offset(0.3, 0.3),
         markerId: MarkerId('ball'),
-        position: LatLng(37.42227873061003, -122.0839528893912),
+        position: LatLng(tempx, -122.0839528893912),
         icon: pinLocationBall != null
             ? pinLocationBall!
             : BitmapDescriptor.defaultMarkerWithHue(
