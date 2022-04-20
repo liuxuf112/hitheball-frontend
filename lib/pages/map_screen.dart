@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:developer';
 import 'dart:typed_data';
 
 import 'package:enhanced_ctf/classes/coin_location_data.dart';
@@ -30,6 +31,8 @@ const flagWidthAndHeight = 100;
 const userWidthAndHeight = 100;
 const coinWidthAndHeight = 80;
 
+const ballWidthAndHeight = 100;
+
 class MapScreen extends StatefulWidget {
   const MapScreen({Key? key}) : super(key: key);
 
@@ -44,6 +47,7 @@ class _MapScreenState extends State<MapScreen> {
   List<Marker> listMarkers = [];
   List<LatLngData> listLocation = [];
   List<MapDataPoint> teamMatesListLocation = [];
+
   List<MapDataPoint> enemysList = [];
   List<MapDataPoint> enemysFlagsList = [];
   List<MapDataPoint> teamMatesFlagsList = [];
@@ -67,6 +71,8 @@ class _MapScreenState extends State<MapScreen> {
   BitmapDescriptor? pinLocationFlagBlueRedPoint;
   BitmapDescriptor? pinLocationFlagBlue;
   BitmapDescriptor? pinLocationIconCoin;
+
+  BitmapDescriptor? pinLocationBall;
 
   BitmapDescriptor? redKnight;
   BitmapDescriptor? blueKnight;
@@ -259,9 +265,14 @@ class _MapScreenState extends State<MapScreen> {
       } else {
         String data = response.body;
         var decodedData = json.decode(data);
+
         teamMates = decodedData['teammates'];
         enemys = decodedData['enemys'];
         teamFlags = decodedData['teamFlags'];
+
+        debugPrint(decodedData.toString());
+        //debugPrint(decodedData['teamFlags'].toString());
+
         enemyFlags = decodedData['enemyFlags'];
 
         listCustomMarkers
@@ -270,7 +281,7 @@ class _MapScreenState extends State<MapScreen> {
         teamMatesFlag();
         enemyLocationList();
         enemyFlag();
-        getCoinLocationDataResult();
+        addball();
 
         if (_isTimerStopped == false) {
           setState(() {});
@@ -281,84 +292,43 @@ class _MapScreenState extends State<MapScreen> {
     }
   }
 
-  void playerGetGameCoin(playerId) async {
-    if (playerId == null) {
-      showSnackBarMessage(
-          "Error playerGetGameCoin, internal state is incorrect playerId: $playerId",
-          context);
-    }
-    if (gameCoins.isNotEmpty) {
-      for (int i = 0; i < gameCoins.length; i++) {
-        double distance = getDistance(
-            _gameState?.currentPosition?.latitude ?? 0.0,
-            _gameState.currentPosition?.longitude ?? 0.0,
-            gameCoins[i].latitude,
-            gameCoins[i].longitude);
-        if (distance <= _GET_COIN_DISTANCE) {
-          Map<String, dynamic> sendBody = {};
-          sendBody['coinId'] = gameCoins[i].coinId;
-          sendBody['playerId'] = playerId;
-          try {
-            var response = await makePostRequest(
-                PLAYER_GET_GAME_COIN, jsonEncode(sendBody));
-            if (response == null) {
-              throw "get request failed for playerGetGameCoin";
-            }
-          } on Exception {
-            debugPrint("playerGetGameCoin failed");
-          }
-        }
-      }
-    }
-  }
-
   double getDistance(double startLatitude, double startLongitude,
       double endLatitude, double endLongitude) {
     return Geolocator.distanceBetween(
         startLatitude, startLongitude, endLatitude, endLongitude);
   }
 
-  void getCoinLocationDataResult() async {
-    String? gameId = _gameState.gameID;
-    if (gameId == null) {
-      showSnackBarMessage(
-          "Error getting coins data, internal state is incorrect gameID: $gameId",
-          context);
+  void addball() {
+    listCustomMarkers.add(
+      Marker(
+        anchor: const Offset(0.3, 0.3),
+        markerId: MarkerId('ball'),
+        position: LatLng(37.42227873061003, -122.0839528893912),
+        icon: pinLocationBall != null
+            ? pinLocationBall!
+            : BitmapDescriptor.defaultMarkerWithHue(
+                BitmapDescriptor.hueRed,
+              ),
+      ),
+    );
+  }
+
+  void addBallMarker(user) {
+    if (user.username == _gameState.username &&
+        _gameState.whichTeamAmI == blueTeamNumber) {
+      return;
     }
-    var queryParameters = {"gameId": gameId};
-    try {
-      var response = await makeGetRequest(GET_COINS_FROM_GAME, queryParameters);
-      if (response == null) {
-        throw "get request failed for coins";
-      }
-      if (response.statusCode != 200) {
-        debugPrint("error in getting data coins"); //handle this better
-      } else {
-        gameCoins.clear();
-        String data = response.body;
-        var decodedData = json.decode(data);
-        if (decodedData != null &&
-            decodedData is List &&
-            decodedData.isNotEmpty) {
-          for (int i = 0; i < decodedData.length; i++) {
-            gameCoins.add(CoinLocationData.fromJSON(decodedData[i]));
-            listCustomMarkers.add(Marker(
-                anchor: const Offset(0.5, 0.5),
-                markerId: MarkerId('${gameCoins[i].coinId}'),
-                icon: pinLocationIconCoin != null
-                    ? pinLocationIconCoin!
-                    : BitmapDescriptor.defaultMarkerWithHue(
-                        BitmapDescriptor.hueRed,
-                      ),
-                position:
-                    LatLng(gameCoins[i].latitude, gameCoins[i].longitude)));
-          }
-          setState(() {});
-        }
-      }
-    } on Exception {
-      debugPrint("Getting coins from game failed");
-    }
+    listCustomMarkers.add(
+      Marker(
+          anchor: const Offset(0.5, 0.5),
+          markerId: MarkerId('Marker Blue ${user.username} $blueTeamNumber'),
+          position: LatLng(user.latitude, user.longitude),
+          onTap: () {
+            debugPrint('Blue Player Pressed');
+            _tagCheck(user, blueTeamNumber);
+          },
+          icon: getBlueIcon(user)),
+    );
   }
 
   void teamMatesLocationList() {
@@ -652,6 +622,9 @@ class _MapScreenState extends State<MapScreen> {
     pinLocationFlagBlue = await getBitmapDescriptorFromAssetBytes(
         'assets/images/flag.png', flagWidthAndHeight);
 
+    pinLocationBall = await getBitmapDescriptorFromAssetBytes(
+        'assets/images/ball.png', ballWidthAndHeight);
+
     pinLocationFlagRed = await getBitmapDescriptorFromAssetBytes(
         'assets/images/red_flag.png', flagWidthAndHeight);
     pinLocationFlagRedBluePoint = await getBitmapDescriptorFromAssetBytes(
@@ -692,89 +665,6 @@ class _MapScreenState extends State<MapScreen> {
 
   void _stealCheck(MapDataPoint flag, int teamNumber) async {
     _showStealFlagDialog(flag, teamNumber);
-  }
-
-  void _attemptTagPlayer(String username, int teamNumber) async {
-    debugPrint("Attempt Tag Player");
-    debugPrint("username: $username");
-    debugPrint("team: $teamNumber");
-
-    String? deviceID = await DeviceId.getDeviceID();
-    if (deviceID == null) {
-      debugPrint("deviceID = null, this shouldn't happen");
-      showSnackBarMessage(
-          'Tag player failed... deviceID does not exist', context);
-
-      return;
-    }
-
-    String? gameID = _gameState.gameID;
-    try {
-      var response = await makeGetRequest(TAG_PLAYER_PATH,
-          {"deviceId": deviceID, "gameId": gameID, "enemyUsername": username});
-      if (response == null) {
-        throw "Get Request Failed";
-      }
-      debugPrint("response: " + response.statusCode.toString());
-      if (response.statusCode == 200 &&
-          jsonDecode(response.body)['playerTagged'] == false) {
-        debugPrint('Player Tag Failed');
-        showSnackBarMessage('Attempt failed: you are too far away!', context);
-      } else if (response.statusCode == 200) {
-        debugPrint('Tag Successful');
-        showSnackBarMessage('You just tagged $username!', context);
-        player.play('tag_player.mp3');
-      } else if (response.statusCode != 200) {
-        debugPrint(response.body);
-        showSnackBarMessage('Attempt to tag player failed', context);
-      }
-      return;
-    } catch (err) {
-      showSnackBarMessage("Attempt to tag player failed", context);
-      return;
-    }
-  }
-
-  void _attemptStealFlag(MapDataPoint flag, int teamNumber) async {
-    debugPrint("Attempt Steal Flag");
-    debugPrint("flag: ${flag.flagNumber}");
-    debugPrint("team: $teamNumber");
-
-    String? deviceID = await DeviceId.getDeviceID();
-    if (deviceID == null) {
-      debugPrint("deviceID = null, this shouldn't happen");
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-            content: Text('Steal flag failed... deviceID does not exist')),
-      );
-      return;
-    }
-
-    String? gameID = _gameState.gameID;
-
-    try {
-      var response = await makeGetRequest(STEAL_FLAG_PATH, {
-        "gameId": gameID,
-        "deviceId": deviceID,
-        "flagNumber": flag.flagNumber.toString()
-      });
-      if (response == null) {
-        throw "Get Request Failed";
-      }
-      debugPrint("responseStatus: " + response.statusCode.toString());
-      debugPrint("responseBody: " + response.body);
-
-      if (response.statusCode == 200 &&
-          jsonDecode(response.body)['flagStolen'] == false) {
-        debugPrint('Steal Flag Failed');
-        showSnackBarMessage('Attempt failed: you are too far away!', context);
-      } else if (response.statusCode != 200) {
-        debugPrint(response.body);
-        showSnackBarMessage('Attempt to steal flag failed', context);
-      }
-    } on Exception {
-      showSnackBarMessage("Attempt to steal flag failed", context);
-    }
   }
 
   void _moveflag() async {
@@ -911,10 +801,7 @@ class _MapScreenState extends State<MapScreen> {
                       'Attempt Steal',
                       style: TextStyle(fontSize: 20, color: Colors.red),
                     ),
-                    onPressed: () {
-                      _attemptStealFlag(flag, teamNumber);
-                      Navigator.of(context).pop();
-                    },
+                    onPressed: () {},
                   )
                 : const Center(),
           ],

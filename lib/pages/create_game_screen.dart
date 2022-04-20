@@ -179,10 +179,9 @@ class _CreateGameScreenState extends State<CreateGameScreen> {
       sendCoinBody["gameId"] = gameId;
       sendCoinBody["amount"] = int.parse(coinsController.text);
 
-      response = await makePostRequest(
-          jsonEncode(sendCoinBody), GENERATE_COIN_FOR_GAME);
-      if (response.statusCode != 200) {
-        showSnackBarMessage('Generate coins failed', context);
+      if (1 == 0) {
+        showSnackBarMessage(
+            "Creating game succeeded! gameID: $gameId", context);
       } else {
         showSnackBarMessage(
             "Creating game succeeded! gameID: $gameId", context);
