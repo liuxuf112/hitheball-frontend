@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:developer';
 import 'dart:typed_data';
 
+import 'dart:math';
 import 'package:enhanced_ctf/classes/coin_location_data.dart';
 import 'package:enhanced_ctf/classes/map_data_point.dart';
 import 'package:enhanced_ctf/classes/location_data.dart';
@@ -33,6 +34,14 @@ const coinWidthAndHeight = 80;
 
 const ballWidthAndHeight = 100;
 var tempx = 37.42227873061003;
+var tempy = -122.0839528893912;
+var temphit = false;
+var hit_top = 1;
+
+var top_boundary;
+var bot_boundary;
+var left_boundary;
+var right_boundary;
 
 class MapScreen extends StatefulWidget {
   const MapScreen({Key? key}) : super(key: key);
@@ -174,6 +183,30 @@ class _MapScreenState extends State<MapScreen> {
     Map<String, double> minsAndMaxesTeamTwo =
         _findMinAndMaxLatAndLong(teamTwoRegion);
 
+    var minLat1 = minsAndMaxesTeamOne['minLat'];
+    var maxlat1 = minsAndMaxesTeamOne['maxLat'];
+
+    var minLat2 = minsAndMaxesTeamTwo['minLat'];
+    var maxlat2 = minsAndMaxesTeamTwo['maxLat'];
+
+    if (maxlat2! > maxlat1!) {
+      top_boundary = maxlat2;
+    } else {
+      top_boundary = maxlat1;
+    }
+
+    if (minLat2! < minLat1!) {
+      bot_boundary = minLat2;
+    } else {
+      bot_boundary = minLat1;
+    }
+
+    var minLong1 = minsAndMaxesTeamOne['minLong'];
+    var maxLong1 = minsAndMaxesTeamOne['maxLong'];
+
+    left_boundary = minLong1;
+    right_boundary = maxLong1;
+
     //hard coded for 4 points teanm one.
     polygonCoords.add(LatLng(
         minsAndMaxesTeamOne['maxLat']!, minsAndMaxesTeamOne['maxLong']!));
@@ -300,13 +333,44 @@ class _MapScreenState extends State<MapScreen> {
   }
 
   void addball() {
-    tempx = tempx + 0.00001;
+    tempx = tempx + (0.0001 * hit_top);
+
+    Random random = new Random();
+    int randomNumber = random.nextInt(100);
+
     //moving by set global
+    if (temphit == true) {
+      if (randomNumber > 50) {
+        tempy = tempy + 0.0001;
+      } else {
+        tempy = tempy - 0.0001;
+      }
+
+      temphit = false;
+    }
+
+    if (tempx > top_boundary) {
+      hit_top = -1;
+    }
+
+    if (tempx < bot_boundary) {
+      hit_top = 1;
+    }
+
+    if (tempy < left_boundary) {
+      tempy = tempy + 0.0005;
+    }
+
+    if (tempy > right_boundary) {
+      tempy = tempy - 0.0005;
+    }
+
+    //link this part to the database
     listCustomMarkers.add(
       Marker(
         anchor: const Offset(0.3, 0.3),
         markerId: MarkerId('ball'),
-        position: LatLng(tempx, -122.0839528893912),
+        position: LatLng(tempx, tempy),
         icon: pinLocationBall != null
             ? pinLocationBall!
             : BitmapDescriptor.defaultMarkerWithHue(
@@ -913,6 +977,8 @@ class _MapScreenState extends State<MapScreen> {
                     child: const Text('Hit The Ball'),
                     onPressed: () {
                       _moveflag();
+                      temphit = true;
+                      //old moveing flag, modify relate to ball
                     },
                   ),
                 ),
